@@ -1768,7 +1768,7 @@ def payment_method_view(request):
 
             messages.success(request, "Saved successfully. Your loan application is now submitted for review.")
 
-            return redirect(reverse("loan_apply") + "?submitted=1")
+            return redirect(reverse("quick_loan") + "?done=1")
 
         return render(request, "payment_method.html", {"form": form, "locked": obj.locked, "saved": False})
 
