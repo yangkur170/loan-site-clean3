@@ -1763,11 +1763,7 @@ def payment_method_view(request):
 
             messages.success(request, "Saved successfully. Your loan application is now submitted for review.")
 
-            next_page = (request.GET.get("next") or "").strip()
-            if next_page == "quick_loan":
-                return redirect(reverse("quick_loan") + "?done=1")
-
-            return redirect(reverse("quick_loan") + "?done=1")
+            return redirect(reverse("loan_apply"))
 
         return render(request, "payment_method.html", {"form": form, "locked": obj.locked, "saved": False})
 

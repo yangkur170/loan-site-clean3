@@ -148,13 +148,14 @@ body, body * { font-family: 'Ovelion', sans-serif !important; }
 .back-btn{
   display: inline-flex; align-items: center; justify-content: center;
   height: 44px; padding: 0 26px; border-radius: 999px;
-  background: rgba(255,255,255,.08) !important;
-  color: #fff !important;
+  background: #FFFFFF !important;
+  color: #F26522 !important;
   font-weight: 900; font-size: 14px; text-decoration: none;
-  border: 1.5px solid rgba(255,255,255,.20) !important;
-  transition: transform .15s ease, background .15s ease;
+  border: 2px solid rgba(242,101,34,.30) !important;
+  box-shadow: 0 4px 14px rgba(242,101,34,.12);
+  transition: transform .15s ease;
 }
-.back-btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.13) !important; }
+.back-btn:hover{ transform: translateY(-1px); }
 .back-btn:active{ transform: scale(.98); }
 
 /* ===== Logout Modal ===== */
@@ -236,7 +237,7 @@ body, body * { font-family: 'Ovelion', sans-serif !important; }
       <div class="chev"><svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
     </a>
 
-    <a class="p-btn" href="/loan-info/">
+    <a class="p-btn" href="/loan-apply/">
       <div class="left">
         <div class="ico"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div>
         <div class="txt"><div class="t1">Information</div><div class="t2">Application status &amp; steps</div></div>
@@ -248,6 +249,14 @@ body, body * { font-family: 'Ovelion', sans-serif !important; }
       <div class="left">
         <div class="ico"><svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg></div>
         <div class="txt"><div class="t1">Transactions</div><div class="t2">History of deposits &amp; withdrawals</div></div>
+      </div>
+      <div class="chev"><svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
+    </a>
+
+    <a class="p-btn" href="{% url 'payment_method' %}">
+      <div class="left">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg></div>
+        <div class="txt"><div class="t1">Payment Method</div><div class="t2">Bank &amp; wallet disbursement info</div></div>
       </div>
       <div class="chev"><svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
     </a>

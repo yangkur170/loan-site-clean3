@@ -658,7 +658,7 @@ input[readonly] {
       const amount = amountEl?.value || "";
       const term = termEl?.value || "";
       if(!amount || !term) return;
-      window.location.href = "{% url 'loan_info' %}?amount=" + encodeURIComponent(amount) + "&term=" + encodeURIComponent(term);
+      window.location.href = "{% url 'loan_apply' %}";
     });
   {% endif %}
 

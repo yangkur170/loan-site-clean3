@@ -1,293 +1,173 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Payment Method{% endblock %}
 
 {% block content %}
 <style>
+@font-face {
+  font-family: 'Ovelion';
+  src: url("{% static 'fonts/Ovelion-Regular.ttf' %}") format('truetype');
+}
+body, body * { font-family: 'Ovelion', sans-serif !important; }
 
-/* ===== Layout Wrapper ===== */
+:root{
+  --primary: #F26522;
+  --secondary: #009EAD;
+}
+
+/* Kill base dark overrides */
+.cardx, .card, [class*="card"] {
+  background: #FFFFFF !important;
+  color: #0A2540 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.wrap{ display: block !important; }
+
+/* ===== Page wrapper ===== */
 .dash-wrap{
   width: min(520px, 94vw);
   margin: 0 auto;
-  padding: 74px 14px 24px;
+  padding: 20px 14px 40px;
   box-sizing: border-box;
 }
 
-/* ===== Main Card Style (MATCH DASHBOARD) ===== */
+/* ===== White card ===== */
 .cardx{
-  position: relative;
-  background: rgba(0, 0, 0, 0.788);
-  border-radius: 18px;
-  border: 2px solid rgba(192, 192, 192, 0.904);
-  backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
-  box-shadow: 0 0 10px rgba(10,10,9,.788),
-              0 14px 10px rgba(0,0,0,.815);
+  position: relative !important;
+  background: #FFFFFF !important;
+  border-radius: 22px !important;
+  padding: 20px !important;
+  border: 2px solid rgba(242,101,34,.28) !important;
+  box-shadow: 0 16px 48px rgba(242,101,34,.10), 0 0 0 1px rgba(245,197,24,.08) !important;
   overflow: hidden;
-  margin-bottom: 16px;
-  padding: 18px;
+  margin-bottom: 14px;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 /* ===== Typography ===== */
-.pm-page, .pm-page *{
-  font-family: "Ovelion", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-}
+.pm-page, .pm-page *{ font-family: "Ovelion", sans-serif; }
 
-.muted{ color: rgba(255,255,255,.78); }
+h2{ color: var(--primary) !important; }
+.muted{ color: #64748b !important; }
 
+/* ===== Status badge ===== */
 .badge{
-  display:inline-flex;
-  align-items:center;
-  padding:8px 12px;
-  border-radius:999px;
-  font-weight:900;
-  font-size:12px;
-  border:1px solid rgba(255,255,255,.14);
-  background: rgba(0,0,0,.16);
-  color:#fff;
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 12px;
+  border: 1.5px solid rgba(242,101,34,.25);
+  background: #F4F6FB;
+  color: var(--primary);
+  white-space: nowrap;
+}
+.badge.is-saved{
+  background: rgba(22,163,74,.10);
+  border-color: rgba(22,163,74,.35);
+  color: #16a34a;
 }
 
-/* ===== Sections ===== */
+/* ===== Section panels ===== */
 .pm-section{
-  margin:12px 0;
-  padding:12px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,.16);
-  background:rgba(0,0,0,.14);
+  margin: 12px 0;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1.5px solid rgba(242,101,34,.15);
+  background: #F4F6FB;
 }
-
 .pm-title{
-  font-weight:950;
-  margin-bottom:6px;
-  color:#fff;
+  font-weight: 950;
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: var(--primary) !important;
 }
 
-/* Inputs */
+/* ===== Inputs ===== */
 .pm-section input{
-  width:100%;
-  padding:12px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,.18);
-  background: rgba(0,0,0,.22);
-  color:#fff;
-  outline:none;
-  box-sizing:border-box;
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(242,101,34,.15) !important;
+  background: #FFFFFF !important;
+  color: #0A2540 !important;
+  font-weight: 700;
+  outline: none;
+  box-sizing: border-box;
+  transition: all .2s ease;
 }
-
-.pm-section input::placeholder{
-  color: rgba(255,255,255,.55);
+.pm-section input::placeholder{ color: #94a3b8 !important; }
+.pm-section input:focus{
+  border-color: rgba(242,101,34,.45) !important;
+  box-shadow: 0 0 0 3px rgba(242,101,34,.08) !important;
 }
-
-/* Lock mode */
 .pm-locked input{
-  pointer-events:none;
-  opacity:.65;
+  pointer-events: none;
+  opacity: .75;
+  cursor: not-allowed;
 }
 
-/* ===== Bottom Button ===== */
-.bottom-nav{
-  margin-top:18px;
-}
-
-.nav-inner{
-  display:flex;
-  justify-content:center;
-}
-
+/* ===== Save button ===== */
+.bottom-nav{ margin-top: 16px; }
 .nav-btn{
-  width:220px;
-  height:52px;
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,.16);
-  background: linear-gradient(90deg, #004182, #054585d0);
-  color:#fff;
-  font-weight:950;
-  letter-spacing:.04em;
-  box-shadow: 0 14px 36px rgba(0,0,0,.45);
-  cursor:pointer;
-}
-
-.nav-btn:disabled{
-  opacity:.55;
-  cursor:not-allowed;
-}
-/* ✅ FORCE override base.html */
-.pm-page .cardx{
-  background: rgba(0, 0, 0, 0.788) !important;
-  border-radius: 18px !important;
-  border: 2px solid rgba(192, 192, 192, 0.904) !important;
-
-  backdrop-filter: blur(22px) !important;
-  -webkit-backdrop-filter: blur(22px) !important;
-
-  box-shadow: 0 0 10px rgba(10,10,9,.788),
-              0 14px 10px rgba(0,0,0,.815) !important;
-}
-
-/* ✅ center only single Save button */
-.pm-page .bottom-nav{
-  background: transparent !important;
+  width: 100%;
+  height: 48px;
+  border-radius: 999px;
   border: 0 !important;
-  box-shadow: none !important;
-  padding: 0 !important;
+  background: linear-gradient(90deg, var(--primary), var(--secondary)) !important;
+  color: #fff !important;
+  font-weight: 900 !important;
+  font-size: 15px !important;
+  letter-spacing: .04em;
+  box-shadow: 0 10px 30px rgba(242,101,34,.30) !important;
+  cursor: pointer;
+  transition: all .2s ease;
 }
+.nav-btn:hover{ transform: translateY(-1px); box-shadow: 0 12px 36px rgba(242,101,34,.38) !important; }
+.nav-btn:active{ transform: scale(.98); }
+.nav-btn:disabled{ opacity: .55 !important; cursor: not-allowed; transform: none !important; }
 
-.pm-page .nav-inner{
-  display:flex !important;
-  justify-content:center !important;
+/* ===== Back button ===== */
+.top-actions{ margin-top: 14px; }
+.back-btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 26px;
+  border-radius: 999px;
+  background: #FFFFFF;
+  color: var(--primary);
+  font-weight: 900;
+  font-size: 14px;
+  text-decoration: none;
+  border: 2px solid rgba(242,101,34,.30);
+  box-shadow: 0 4px 14px rgba(242,101,34,.12);
+  transition: transform .15s ease;
 }
+.back-btn:hover{ transform: translateY(-1px); }
+.back-btn:active{ transform: scale(.98); }
 
-.pm-page .nav-btn{
-  width: 220px !important;
-  flex: 0 0 auto !important;
-}
-/* ✅ Payment Method ONLY: stop wrap flex twisting this page */
-.wrap{ display:block !important; }
-
-/* ✅ Force CardX style (wins base.html) */
-.pm-page .cardx{
-  background: rgba(0,0,0,.788) !important;
-  border: 2px solid rgba(192,192,192,.904) !important;
-  box-shadow: 0 0 10px rgba(10,10,9,.788),
-              0 14px 10px rgba(0,0,0,.815) !important;
-  backdrop-filter: blur(22px) !important;
-  -webkit-backdrop-filter: blur(22px) !important;
-}
-
-/* ✅ Center only the Save button */
-.pm-page .nav-inner{ justify-content:center !important; }
-.pm-page .nav-btn{ width:220px !important; flex:0 0 auto !important; }
-
-/* ✅ Center Save button (no need nav-inner) */
-.pm-page .bottom-nav{
-  display:flex !important;
-  justify-content:center !important;
-}
-.pm-page .bottom-nav .nav-btn{
-  margin: 0 auto !important;
-  display:block !important;
-}
-/* =========================
-   ✅ PAYMENT METHOD = WHITE LUXURY (like wallet lower cards)
-   ========================= */
-
-/* 1) Main card -> white */
-.pm-page .cardx{
-  position: relative !important;
-  overflow: hidden !important;
-
-  background: linear-gradient(
-      180deg,
-      #ffffff 0%,
-      #f8fafc 45%,
-      #eef2f7 75%,
-      #ffffff 100%
-  ) !important;
-
-  border: 2px solid rgba(212,175,55,.85) !important;
-
-  box-shadow:
-      0 20px 45px rgba(0,0,0,.12),
-      0 0 0 1px rgba(255,255,255,.9) inset !important;
-
-  backdrop-filter: blur(14px) !important;
-  -webkit-backdrop-filter: blur(14px) !important;
-}
-
-/* soft gold/blue glow */
-.pm-page .cardx::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  background:
-    radial-gradient(circle at 90% 90%, rgba(212,175,55,.25), transparent 55%),
-    radial-gradient(circle at 10% 10%, rgba(0,65,130,.08), transparent 60%);
-  opacity:.75;
-}
-.pm-page .cardx::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,0) 55%);
-  opacity:.6;
-}
-.pm-page .cardx > *{
-  position: relative;
-  z-index: 1;
-}
-
-/* 2) Text -> deep blue */
-.pm-page .cardx,
-.pm-page .cardx *{
-  color:#0b2f55 !important;
-  text-shadow: none !important;
-}
-
-/* title + muted */
-.pm-page .muted{ color: rgba(11,47,85,.72) !important; }
-.pm-page .pm-title{ color:#0b2f55 !important; }
-
-/* 3) Badge -> gray pill (still readable on white) */
-.pm-page .badge{
-  border: 1px solid rgba(11,47,85,.16) !important;
-  background: rgba(11,47,85,.06) !important;
-  color:#0b2f55 !important;
-}
-
-/* 4) Sections -> light panel */
-.pm-page .pm-section{
-  border: 1px solid rgba(11,47,85,.14) !important;
-  background: rgba(11,47,85,.04) !important;
-}
-
-/* 5) Inputs -> light blue-ish */
-.pm-page .pm-section input,
-.pm-page .pm-section input[type="text"],
-.pm-page .pm-section input[type="number"],
-.pm-page .pm-section input[type="tel"],
-.pm-page .pm-section input[type="email"]{
-  background: rgba(11,47,85,.06) !important;
-  border: 1px solid rgba(11,47,85,.18) !important;
-  color:#0b2f55 !important;
-  box-shadow: none !important;
-}
-
-.pm-page .pm-section input::placeholder{
-  color: rgba(11,47,85,.55) !important;
-}
-
-.pm-page .pm-section input:focus{
-  outline: none !important;
-  border-color: rgba(0,65,130,.55) !important;
-  box-shadow: 0 0 0 3px rgba(0,65,130,.18) !important;
-}
-
-/* 6) Locked mode (still looks clean) */
-.pm-page .pm-locked input{
-  opacity: .65 !important;
-  filter: grayscale(.15) !important;
-}
-
-/* 7) Button keep blue (like other pages) */
-.pm-page .nav-btn{
-  background: linear-gradient(90deg, #004182, #054585d0) !important;
-  color:#fff !important;
-  border: 0 !important;
+@media(max-width: 520px){
+  .back-btn{ height: 40px; padding: 0 20px; font-size: 13px; }
+  .dash-wrap{ padding: 16px 12px 40px; }
 }
 </style>
 
 <div class="dash-wrap pm-page">
   <div class="cardx">
 
-    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:10px;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:14px;">
       <div>
-        <h2 style="margin:0;font-size:26px;font-weight:950;">Payment Method</h2>
-        <div class="muted">Add or update your payout details</div>
+        <h2 style="margin:0;font-size:22px;font-weight:950;">Payment Method</h2>
+        <div class="muted" style="margin-top:4px;font-size:13px;">Bank &amp; wallet info</div>
       </div>
-
-      <span class="badge">
-        Status: {% if saved %}Saved{% else %}Not set{% endif %}
+      <span class="badge {% if saved %}is-saved{% endif %}">
+        {% if saved %}Saved{% else %}Not set{% endif %}
       </span>
     </div>
 
@@ -297,25 +177,27 @@
       <!-- Bank -->
       <div class="pm-section {% if saved %}pm-locked{% endif %}">
         <div class="pm-title">Bank</div>
-        <div style="display:grid;gap:10px;">
+        <div style="display:grid;gap:12px;">
           <div>
-            <div class="muted" style="font-size:12px;margin-bottom:6px;">Account name</div>
+            <div class="muted" style="font-size:12px;font-weight:700;margin-bottom:6px;">Account name</div>
             {{ form.bank_name }}
           </div>
           <div>
-            <div class="muted" style="font-size:12px;margin-bottom:6px;">Account number</div>
+            <div class="muted" style="font-size:12px;font-weight:700;margin-bottom:6px;">Account number</div>
             {{ form.bank_account }}
           </div>
         </div>
       </div>
 
       {% if locked %}
-        <div class="muted" style="margin-top:10px;">Locked: Please contact staff to update.</div>
+        <div class="muted" style="margin-top:10px;font-size:13px;text-align:center;">
+          Locked — contact staff to update.
+        </div>
       {% endif %}
 
       <div class="bottom-nav">
         {% if locked %}
-          <button class="nav-btn" type="button" disabled>Saved</button>
+          <button class="nav-btn" type="button" disabled>Saved ✓</button>
         {% else %}
           <button class="nav-btn" type="submit">Save</button>
         {% endif %}
@@ -324,6 +206,8 @@
     </form>
 
   </div>
+
+
 </div>
 
 {% endblock %}

@@ -18,12 +18,12 @@ SECRET_KEY = os.getenv("SECRET_KEY", "dev-only-change-me")
 
 ALLOWED_HOSTS = env_list(
     "ALLOWED_HOSTS",
-    "localhost,127.0.0.1,dcfinancingcorporationform.com,www.dcfinancingcorporationform.com,loving-tenderness-production-2c60.up.railway.app"
+    "localhost,127.0.0.1,dcfinancingcorporationapply.com,www.dcfinancingcorporationapply.com,loving-tenderness-production-2c60.up.railway.app"
 )
 
 CSRF_TRUSTED_ORIGINS = env_list(
     "CSRF_TRUSTED_ORIGINS",
-    "https://dcfinancingcorporationform.com,https://www.dcfinancingcorporationform.com,https://loving-tenderness-production-2c60.up.railway.app"
+    "https://dcfinancingcorporationapply.com,https://www.dcfinancingcorporationapply.com,https://loving-tenderness-production-2c60.up.railway.app"
 )
 
 INSTALLED_APPS = [
