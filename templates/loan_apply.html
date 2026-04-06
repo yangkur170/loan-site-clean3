@@ -623,7 +623,7 @@ input[readonly], textarea[readonly] { opacity: .80; cursor: not-allowed; }
 
       <hr style="border:0;border-top:1px solid rgba(255,255,255,.16); margin:14px 0;">
 
-      <div class="section-title" style="margin:0 0 10px;">Apply Loan</div>
+      <div class="section-title" id="applyLoanSection" style="margin:0 0 10px;">Apply Loan</div>
 
       <div class="field">
         <label>Loan amount (Min ₱100,000 · Max ₱10,000,000)</label>
@@ -795,28 +795,37 @@ input[readonly], textarea[readonly] { opacity: .80; cursor: not-allowed; }
         const qs = new URLSearchParams(window.location.search);
         const a = qs.get("amount");
         const t = qs.get("term");
-    
-        const amountEl = document.getElementById("loanAmount");
+        const doScroll = qs.get("scroll") === "1";
+
+        const amountEl   = document.getElementById("loanAmount");
         const termHidden = document.getElementById("loanTerms");
-        const hint = document.getElementById("termHint");
-        const btns = document.querySelectorAll(".term-btn");
-    
+        const hint       = document.getElementById("termHint");
+        const btns       = document.querySelectorAll(".term-btn");
+
         if(a && amountEl) amountEl.value = a;
-    
+
         if(t && termHidden){
           termHidden.value = t;
-    
           btns.forEach(b=>{
             if(b.dataset.term === String(t)){
               btns.forEach(x=>x.classList.remove("active"));
               b.classList.add("active");
             }
           });
-    
           if(hint) hint.textContent = t + " months";
         }
-    
+
         if(window.updateSummary) window.updateSummary();
+
+        // Scroll to Apply Loan section smoothly
+        if(doScroll){
+          const sec = document.getElementById("applyLoanSection");
+          if(sec){
+            setTimeout(()=>{
+              sec.scrollIntoView({ behavior:"smooth", block:"center" });
+            }, 120);
+          }
+        }
       })();
     </script>
     <script>
