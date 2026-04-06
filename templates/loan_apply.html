@@ -672,6 +672,7 @@ input[readonly], textarea[readonly] { opacity: .80; cursor: not-allowed; }
         <div class="row"><div class="k">Total payment</div><div class="v" id="sumTotal">—</div></div>
       </div>
 
+      <div id="ctaSection">
       {% if locked %}
         {% if loan.status == "DRAFT" %}
           <a href="{% url 'payment_method' %}" class="btn btn-primary cta" style="display:flex;align-items:center;justify-content:center;text-decoration:none;">
@@ -687,6 +688,7 @@ input[readonly], textarea[readonly] { opacity: .80; cursor: not-allowed; }
           Continue to Payment Method →
         </button>
       {% endif %}
+      </div>
 <!-- TOP ACTIONS -->
 <div class="top-actions">
   <a class="back-btn" href="{% url 'profile' %}">
@@ -815,6 +817,16 @@ input[readonly], textarea[readonly] { opacity: .80; cursor: not-allowed; }
         }
 
         if(window.updateSummary) window.updateSummary();
+
+        // Scroll to submitted UI if coming from payment_method save
+        if(qs.get("submitted") === "1"){
+          const cta = document.getElementById("ctaSection");
+          if(cta){
+            setTimeout(()=>{
+              cta.scrollIntoView({ behavior:"smooth", block:"center" });
+            }, 150);
+          }
+        }
       })();
     </script>
     <script>
