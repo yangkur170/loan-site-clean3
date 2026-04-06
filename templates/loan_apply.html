@@ -1001,6 +1001,57 @@ clearBtn && clearBtn.addEventListener("click", clear);
       }
     });
   });
-</script>    
-  
+</script>
+
+<!-- ===== Submit Loading Overlay ===== -->
+<style>
+#submitOverlay{
+  display:none;
+  position:fixed;inset:0;z-index:9999;
+  background:rgba(10,37,64,.82);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:20px;
+}
+#submitOverlay.show{ display:flex; }
+.spin-ring{
+  width:56px;height:56px;
+  border:5px solid rgba(255,255,255,.15);
+  border-top-color:#F26522;
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{ to{ transform:rotate(360deg); } }
+.overlay-txt{
+  color:#fff;font-weight:900;font-size:16px;
+  letter-spacing:.04em;text-align:center;
+}
+.overlay-sub{
+  color:rgba(255,255,255,.65);font-size:13px;
+  margin-top:-12px;text-align:center;
+}
+</style>
+
+<div id="submitOverlay">
+  <div class="spin-ring"></div>
+  <div class="overlay-txt">Submitting Application…</div>
+  <div class="overlay-sub">Please wait, uploading your documents</div>
+</div>
+
+<script>
+(function(){
+  const form = document.querySelector('.cardx form');
+  if(!form) return;
+  form.addEventListener('submit', function(){
+    // only show overlay if form is valid (not locked)
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if(submitBtn && !submitBtn.disabled){
+      document.getElementById('submitOverlay').classList.add('show');
+    }
+  });
+})();
+</script>
+
 {% endblock %}

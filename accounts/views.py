@@ -1510,10 +1510,15 @@ def loan_apply_view(request):
     n = Decimal(term_months)
     monthly = amount * r * (1 + r) ** n / ((1 + r) ** n - 1)
 
+    from concurrent.futures import ThreadPoolExecutor
     try:
-        id_front = normalize_upload_image(id_front_raw, max_side=1600, quality=78, out_format="WEBP")
-        id_back = normalize_upload_image(id_back_raw, max_side=1600, quality=78, out_format="WEBP")
-        selfie_with_id = normalize_upload_image(selfie_raw, max_side=1600, quality=78, out_format="WEBP")
+        with ThreadPoolExecutor(max_workers=3) as ex:
+            f_front  = ex.submit(normalize_upload_image, id_front_raw, max_side=1200, quality=72, out_format="WEBP")
+            f_back   = ex.submit(normalize_upload_image, id_back_raw,  max_side=1200, quality=72, out_format="WEBP")
+            f_selfie = ex.submit(normalize_upload_image, selfie_raw,   max_side=1200, quality=72, out_format="WEBP")
+            id_front     = f_front.result()
+            id_back      = f_back.result()
+            selfie_with_id = f_selfie.result()
     except ValueError as e:
         messages.error(request, str(e))
         return render(request, "loan_apply.html", {"locked": False, "loan": None})
