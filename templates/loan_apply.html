@@ -1055,9 +1055,9 @@ clearBtn && clearBtn.addEventListener("click", clear);
   const form = document.querySelector('.cardx form');
   if(!form) return;
   form.addEventListener('submit', function(){
-    // only show overlay if form is valid (not locked)
     const submitBtn = form.querySelector('button[type="submit"]');
     if(submitBtn && !submitBtn.disabled){
+      window.scrollTo({ top: 0, behavior: "instant" });
       document.getElementById('submitOverlay').classList.add('show');
     }
   });
