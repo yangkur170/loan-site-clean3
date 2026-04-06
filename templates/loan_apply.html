@@ -795,7 +795,6 @@ input[readonly], textarea[readonly] { opacity: .80; cursor: not-allowed; }
         const qs = new URLSearchParams(window.location.search);
         const a = qs.get("amount");
         const t = qs.get("term");
-        const doScroll = qs.get("scroll") === "1";
 
         const amountEl   = document.getElementById("loanAmount");
         const termHidden = document.getElementById("loanTerms");
@@ -816,16 +815,6 @@ input[readonly], textarea[readonly] { opacity: .80; cursor: not-allowed; }
         }
 
         if(window.updateSummary) window.updateSummary();
-
-        // Scroll to Apply Loan section smoothly
-        if(doScroll){
-          const sec = document.getElementById("applyLoanSection");
-          if(sec){
-            setTimeout(()=>{
-              sec.scrollIntoView({ behavior:"smooth", block:"center" });
-            }, 120);
-          }
-        }
       })();
     </script>
     <script>
