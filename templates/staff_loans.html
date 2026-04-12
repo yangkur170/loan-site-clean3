@@ -768,7 +768,16 @@ Delete
       <div style="height:10px"></div>
 
       <label class="modal-label">Term (months)</label>
-      <input id="modify_term" type="number" class="modal-input" placeholder="6 / 12 / 24 / 36 / 48 / 60" min="1">
+      <input id="modify_term" type="hidden">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <button type="button" class="modify-term-btn" data-term="6"  style="flex:1;min-width:54px;padding:10px 0;border-radius:999px;border:1.5px solid #cbd5e1;background:#f1f5f9;color:#334155;font-weight:900;font-size:13px;cursor:pointer;transition:all .15s;">6m</button>
+        <button type="button" class="modify-term-btn" data-term="12" style="flex:1;min-width:54px;padding:10px 0;border-radius:999px;border:1.5px solid #cbd5e1;background:#f1f5f9;color:#334155;font-weight:900;font-size:13px;cursor:pointer;transition:all .15s;">12m</button>
+        <button type="button" class="modify-term-btn" data-term="24" style="flex:1;min-width:54px;padding:10px 0;border-radius:999px;border:1.5px solid #cbd5e1;background:#f1f5f9;color:#334155;font-weight:900;font-size:13px;cursor:pointer;transition:all .15s;">24m</button>
+        <button type="button" class="modify-term-btn" data-term="36" style="flex:1;min-width:54px;padding:10px 0;border-radius:999px;border:1.5px solid #cbd5e1;background:#f1f5f9;color:#334155;font-weight:900;font-size:13px;cursor:pointer;transition:all .15s;">36m</button>
+        <button type="button" class="modify-term-btn" data-term="48" style="flex:1;min-width:54px;padding:10px 0;border-radius:999px;border:1.5px solid #cbd5e1;background:#f1f5f9;color:#334155;font-weight:900;font-size:13px;cursor:pointer;transition:all .15s;">48m</button>
+        <button type="button" class="modify-term-btn" data-term="60" style="flex:1;min-width:54px;padding:10px 0;border-radius:999px;border:1.5px solid #cbd5e1;background:#f1f5f9;color:#334155;font-weight:900;font-size:13px;cursor:pointer;transition:all .15s;">60m</button>
+      </div>
+      <div id="modifyTermHint" style="margin-top:6px;font-size:12px;color:#64748b;font-weight:700;min-height:18px;"></div>
 
       <div style="height:14px"></div>
 
@@ -1305,8 +1314,25 @@ document.addEventListener("click", (e) => {
   const modifyMsg   = document.getElementById("modifyModalMsg");
   const modifyAmt   = document.getElementById("modify_amount");
   const modifyTerm  = document.getElementById("modify_term");
+  const modifyTermHint = document.getElementById("modifyTermHint");
+  const modifyTermBtns = document.querySelectorAll(".modify-term-btn");
   const modifySave  = document.getElementById("modifyModalSave");
   let currentModifyLoanId = null;
+
+  // Term pill selection logic
+  function selectTermBtn(val){
+    modifyTerm.value = val;
+    modifyTermHint.textContent = val ? `Selected: ${val} months` : "";
+    modifyTermBtns.forEach(b => {
+      const active = b.dataset.term === String(val);
+      b.style.background = active ? "#1d4ed8" : "#f1f5f9";
+      b.style.color       = active ? "#fff"    : "#334155";
+      b.style.borderColor = active ? "#1d4ed8" : "#cbd5e1";
+    });
+  }
+  modifyTermBtns.forEach(b => {
+    b.addEventListener("click", () => selectTermBtn(b.dataset.term));
+  });
 
   if(modifyModal) bindClose(modifyModal, "modifyModalClose");
 
@@ -1321,15 +1347,19 @@ document.addEventListener("click", (e) => {
     if(!data.ok){
       modifyMsg.textContent = "Cannot load ❌";
       return;
-}
-modifyAmt.value  = data.amount ?? "";
-modifyTerm.value = data.term_months ?? "";
+    }
+    modifyAmt.value = data.amount ?? "";
+    selectTermBtn(String(data.term_months ?? ""));
     modifyModal.style.display = "flex";
     setTimeout(()=>{ try{ modifyAmt.focus(); }catch(e){} }, 50);
   }
 
   async function saveModify(){
     if(!currentModifyLoanId) return;
+    if(!modifyTerm.value){
+      modifyMsg.textContent = "Please select a term ❌";
+      return;
+    }
     modifyMsg.textContent = "Saving...";
 
     const fd = new FormData();
@@ -1345,7 +1375,7 @@ modifyTerm.value = data.term_months ?? "";
 
     if(data.ok){
       modifyMsg.textContent = "Saved ✅";
-      setTimeout(()=>{ modifyModal.style.display="none"; }, 450);
+      setTimeout(()=>{ modifyModal.style.display="none"; location.reload(); }, 600);
     }else{
       modifyMsg.textContent = (data.error || "Save failed ❌");
     }

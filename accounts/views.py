@@ -498,7 +498,7 @@ def staff_user_update(request, user_id):
         except (InvalidOperation, ValueError):
             if is_ajax:
                 return bad_json("balance_invalid")
-            messages.error(request, "Balance មិនត្រឹមត្រូវ ❌")
+            messages.error(request, "Invalid balance value.")
             return back_redirect()
 
     if (u.notification_message or "") != old_notif:
@@ -722,8 +722,8 @@ def staff_loan_edit_save(request, loan_id):
         loan.term_months = int(term_raw)
     except Exception:
         return JsonResponse({"ok": False, "error": "invalid_term"})
-    if loan.term_months not in (12, 18, 24, 30):
-        return JsonResponse({"ok": False, "error": "term_must_be_12_18_24_30"})
+    if loan.term_months not in (6, 12, 24, 36, 48, 60):
+        return JsonResponse({"ok": False, "error": "term_must_be_6_12_24_36_48_60"})
     rate = loan.interest_rate_monthly
     if rate is None:
         cfg = LoanConfig.objects.first()
@@ -943,7 +943,7 @@ def staff_loan_update(request, loan_id):
         try:
             loan.age = int(age_raw)
         except ValueError:
-            messages.error(request, "Age មិនត្រឹមត្រូវ ❌")
+            messages.error(request, "Invalid age value.")
             return redirect(next_url or request.META.get("HTTP_REFERER", "staff_loans"))
 
     amount_raw = (request.POST.get("amount") or "").strip()
@@ -953,18 +953,18 @@ def staff_loan_update(request, loan_id):
         try:
             loan.amount = Decimal(amount_raw)
         except (InvalidOperation, ValueError):
-            messages.error(request, "Amount មិនត្រឹមត្រូវ ❌")
+            messages.error(request, "Invalid loan amount.")
             return redirect(next_url or request.META.get("HTTP_REFERER", "staff_loans"))
 
     if term_raw:
         try:
             loan.term_months = int(term_raw)
         except ValueError:
-            messages.error(request, "Term months មិនត្រឹមត្រូវ ❌")
+            messages.error(request, "Invalid term months.")
             return redirect(next_url or request.META.get("HTTP_REFERER", "staff_loans"))
 
-    if loan.term_months not in (12, 18, 24, 30):
-        messages.error(request, "Term months មិនត្រឹមត្រូវ (12/18/24/30) ❌")
+    if loan.term_months not in (6, 12, 24, 36, 48, 60):
+        messages.error(request, "Invalid term. Must be 6, 12, 24, 36, 48, or 60 months.")
         return redirect(next_url or request.META.get("HTTP_REFERER", "staff_loans"))
 
     rate = loan.interest_rate_monthly
@@ -1354,7 +1354,7 @@ def loan_info_view(request):
     except (ValueError, TypeError):
         return _err("Please choose loan terms.")
 
-    if term_months not in (12, 18, 24, 30):
+    if term_months not in (6, 12, 24, 36, 48, 60):
         return _err("Invalid loan terms.")
 
     cfg = LoanConfig.objects.first()
@@ -1460,48 +1460,64 @@ def loan_apply_view(request):
     selfie_raw = request.FILES.get("selfie_with_id")
     income_proof = request.FILES.get("income_proof")
 
+    # Preserve all entered text data so form is NOT reset on validation error
+    def _err(msg):
+        messages.error(request, msg)
+        return render(request, "loan_apply.html", {
+            "locked": False,
+            "loan": None,
+            "prefill": {
+                "full_name": full_name,
+                "age": age_raw,
+                "current_living": current_living,
+                "hometown": hometown,
+                "income": income,
+                "monthly_expenses": monthly_expenses,
+                "guarantor_contact": guarantor_contact,
+                "guarantor_current_living": guarantor_current_living,
+                "identity_name": identity_name,
+                "identity_number": identity_number,
+                "loan_amount": loan_amount_raw,
+                "loan_terms": term_raw,
+                "loan_purposes": loan_purposes,
+                "signature_data": signature_data,
+            }
+        })
+
     if not (
         full_name and age_raw and current_living and hometown and monthly_expenses
         and guarantor_contact and guarantor_current_living and identity_name and identity_number
     ):
-        messages.error(request, "Please fill all required fields.")
-        return render(request, "loan_apply.html", {"locked": False, "loan": None})
+        return _err("Please fill all required fields.")
 
     if not (id_front_raw and id_back_raw and selfie_raw):
-        messages.error(request, "Please upload Front/Back/Selfie ID images.")
-        return render(request, "loan_apply.html", {"locked": False, "loan": None})
+        return _err("Please upload Front/Back/Selfie ID images.")
 
     if not signature_data.startswith("data:image"):
-        messages.error(request, "Please draw your signature first.")
-        return render(request, "loan_apply.html", {"locked": False, "loan": None})
+        return _err("Please draw your signature first.")
 
     try:
         age = int(age_raw)
     except ValueError:
-        messages.error(request, "Invalid age.")
-        return render(request, "loan_apply.html", {"locked": False, "loan": None})
+        return _err("Invalid age.")
 
     try:
         amount = Decimal(loan_amount_raw)
     except (InvalidOperation, ValueError):
-        messages.error(request, "Invalid loan amount.")
-        return render(request, "loan_apply.html", {"locked": False, "loan": None})
+        return _err("Invalid loan amount.")
 
     try:
         term_months = int(term_raw)
     except ValueError:
-        messages.error(request, "Please choose loan terms.")
-        return render(request, "loan_apply.html", {"locked": False, "loan": None})
+        return _err("Please choose loan terms.")
 
-    if term_months not in (12, 18, 24, 30):
-        messages.error(request, "Invalid loan terms.")
-        return render(request, "loan_apply.html", {"locked": False, "loan": None})
+    if term_months not in (6, 12, 24, 36, 48, 60):
+        return _err("Invalid loan terms. Please select 6, 12, 24, 36, 48, or 60 months.")
 
     cfg = LoanConfig.objects.first()
     if cfg:
         if amount < Decimal(str(cfg.min_amount)) or amount > Decimal(str(cfg.max_amount)):
-            messages.error(request, f"Loan amount must be between {cfg.min_amount} and {cfg.max_amount}.")
-            return render(request, "loan_apply.html", {"locked": False, "loan": None})
+            return _err(f"Loan amount must be between {cfg.min_amount} and {cfg.max_amount}.")
         rate = Decimal(str(cfg.interest_rate_monthly))
     else:
         rate = Decimal("0.0035")
@@ -1509,6 +1525,13 @@ def loan_apply_view(request):
     r = rate
     n = Decimal(term_months)
     monthly = amount * r * (1 + r) ** n / ((1 + r) ** n - 1)
+
+    # Block HEIC uploads (PIL cannot process them)
+    for label, f in [("ID Front", id_front_raw), ("ID Back", id_back_raw), ("Selfie", selfie_raw)]:
+        if f:
+            ext = os.path.splitext(getattr(f, "name", "") or "")[1].lower()
+            if ext in (".heic", ".heif"):
+                return _err(f"{label}: iPhone HEIC format is not supported. Please convert to JPG or PNG before uploading.")
 
     from concurrent.futures import ThreadPoolExecutor
     try:
@@ -1520,18 +1543,15 @@ def loan_apply_view(request):
             id_back      = f_back.result()
             selfie_with_id = f_selfie.result()
     except ValueError as e:
-        messages.error(request, str(e))
-        return render(request, "loan_apply.html", {"locked": False, "loan": None})
+        return _err(str(e))
     except Exception:
-        messages.error(request, "Image upload error. Please try again with a different photo.")
-        return render(request, "loan_apply.html", {"locked": False, "loan": None})
+        return _err("Image upload error. Please try again with a different photo.")
 
     try:
         header, b64 = signature_data.split(";base64,", 1)
         sig_file = ContentFile(base64.b64decode(b64), name=f"signature_{request.user.id}.png")
     except Exception:
-        messages.error(request, "Signature error. Please clear and draw again.")
-        return render(request, "loan_apply.html", {"locked": False, "loan": None})
+        return _err("Signature error. Please clear and draw again.")
 
     LoanApplication.objects.create(
         user=request.user,
