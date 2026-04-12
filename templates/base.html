@@ -902,6 +902,51 @@ else if(key === "APPROVED" || key === "LOAN_PAID" || key === "WITHDRAWAL_SUCCESS
     start();
   })();
   </script>
+
+  {% if user.is_authenticated and not user.is_staff %}
+  <script>
+  (function(){
+    // Auto logout 5 minutes after tab is hidden / closed
+    const TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
+    let _timer = null;
+
+    function startTimer(){
+      if(_timer) return;
+      _timer = setTimeout(function(){
+        window.location.href = "{% url 'logout' %}";
+      }, TIMEOUT_MS);
+    }
+
+    function clearTimer(){
+      if(_timer){ clearTimeout(_timer); _timer = null; }
+    }
+
+    document.addEventListener("visibilitychange", function(){
+      if(document.hidden){
+        startTimer();
+      } else {
+        clearTimer();
+      }
+    });
+
+    // Also handle tab/window close via beforeunload + localStorage timestamp
+    window.addEventListener("pagehide", function(){
+      localStorage.setItem("_tab_hidden_at", Date.now());
+    });
+
+    // On page load: check if we were hidden too long
+    (function(){
+      const t = localStorage.getItem("_tab_hidden_at");
+      if(t && (Date.now() - parseInt(t)) > TIMEOUT_MS){
+        localStorage.removeItem("_tab_hidden_at");
+        window.location.href = "{% url 'logout' %}";
+      } else {
+        localStorage.removeItem("_tab_hidden_at");
+      }
+    })();
+  })();
+  </script>
+  {% endif %}
 <script>
 (function() {
     // កំណត់ថា បើធំជាង 2MB ទើបបង្ហាប់
