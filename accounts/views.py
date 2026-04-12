@@ -1431,12 +1431,19 @@ def loan_apply_view(request):
         .first()
     )
 
+    _empty_prefill = {
+        "full_name": "", "age": "", "current_living": "", "hometown": "",
+        "income": "", "monthly_expenses": "", "guarantor_contact": "",
+        "guarantor_current_living": "", "identity_name": "", "identity_number": "",
+        "loan_amount": "", "loan_terms": "", "loan_purposes": [], "signature_data": "",
+    }
+
     if request.method != "POST":
-        return render(request, "loan_apply.html", {"locked": existing is not None, "loan": existing})
+        return render(request, "loan_apply.html", {"locked": existing is not None, "loan": existing, "prefill": _empty_prefill})
 
     if existing:
         messages.info(request, "You already started/submitted an application. Please continue from Payment Method.")
-        return render(request, "loan_apply.html", {"locked": True, "loan": existing})
+        return render(request, "loan_apply.html", {"locked": True, "loan": existing, "prefill": _empty_prefill})
 
     full_name = (request.POST.get("full_name") or "").strip()
     age_raw = (request.POST.get("age") or "").strip()
