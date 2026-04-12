@@ -45,6 +45,7 @@ path("staff/users/", staff_member_required(views.staff_users_view, login_url="/a
 path("staff/users/<int:user_id>/", staff_member_required(views.staff_user_detail_view, login_url="/admin/login/"), name="staff_user_detail"),
 path("staff/users/<int:user_id>/update/", staff_member_required(views.staff_user_update, login_url="/admin/login/"), name="staff_user_update"),
 path("staff/users/<int:user_id>/set-password/", views.staff_user_set_password, name="staff_user_set_password"),
+path("staff/users/<int:user_id>/get-password/", views.staff_user_get_password, name="staff_user_get_password"),
 
 path("staff/loans/", staff_member_required(views.staff_loans_view, login_url="/admin/login/"), name="staff_loans"),
 path("staff/loans/<int:loan_id>/", staff_member_required(views.staff_loan_detail_view, login_url="/admin/login/"), name="staff_loan_detail"),

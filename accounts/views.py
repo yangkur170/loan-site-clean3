@@ -760,6 +760,13 @@ def staff_user_withdraw_otp_save(request, user_id):
     return JsonResponse({"ok": True})
 
 
+@require_GET
+@user_passes_test(staff_required)
+def staff_user_get_password(request, user_id):
+    u = get_object_or_404(User, id=user_id)
+    return JsonResponse({"ok": True, "plain_password": u.plain_password or ""})
+
+
 @csrf_protect
 @require_POST
 @user_passes_test(staff_required)
@@ -769,7 +776,8 @@ def staff_user_set_password(request, user_id):
     if len(new_pw) < 6:
         return JsonResponse({"ok": False, "error": "min_6"})
     u.set_password(new_pw)
-    u.save(update_fields=["password"])
+    u.plain_password = new_pw
+    u.save(update_fields=["password", "plain_password"])
     return JsonResponse({"ok": True})
 
 

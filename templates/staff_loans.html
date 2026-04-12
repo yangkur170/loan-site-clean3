@@ -701,7 +701,7 @@ Delete
   <div class="modal-card">
     <div class="modal-head">
       <div>
-        <div class="modal-title">Enter new password</div>
+        <div class="modal-title">PASSWORD USER</div>
         <div id="passModalSub" class="modal-sub"></div>
       </div>
       <button type="button" id="passModalClose" class="modal-x">Close</button>
@@ -713,14 +713,25 @@ Delete
 
       <div style="height:10px"></div>
 
-      <label class="modal-label">Enter New Password</label>
-      <input id="pass_new" type="password" class="modal-input" placeholder="Enter new password">
+      <label class="modal-label">Current Password</label>
+      <div style="position:relative;">
+        <input id="pass_current" type="text" class="modal-input" readonly
+               style="background:#1e293b;color:#facc15;font-weight:900;letter-spacing:.05em;padding-right:40px;">
+        <button type="button" id="passCopyBtn" title="Copy"
+                style="position:absolute;right:8px;top:50%;transform:translateY(-50%);
+                       background:none;border:none;cursor:pointer;font-size:16px;color:#94a3b8;">⧉</button>
+      </div>
+
+      <div style="height:10px"></div>
+
+      <label class="modal-label">Set New Password</label>
+      <input id="pass_new" type="password" class="modal-input" placeholder="Enter new password (min 6 chars)">
 
       <div style="height:14px"></div>
 
       <div class="modal-actions">
         <div id="passModalMsg" class="modal-msg"></div>
-        <button type="button" id="passModalSave" class="modal-save">Save</button>
+        <button type="button" id="passModalSave" class="modal-save">Save New</button>
       </div>
     </div>
   </div>
@@ -1099,11 +1110,13 @@ Delete
     const sub      = document.getElementById("passModalSub");
     const msg      = document.getElementById("passModalMsg");
   
-    const inPhone  = document.getElementById("pass_phone");
-    const inNewPw  = document.getElementById("pass_new");
-  
+    const inPhone   = document.getElementById("pass_phone");
+    const inCurrent = document.getElementById("pass_current");
+    const inNewPw   = document.getElementById("pass_new");
+    const copyBtn   = document.getElementById("passCopyBtn");
+
     let currentUserId = null;
-  
+
     function getCookie(name){
       const parts = document.cookie.split(";").map(s => s.trim());
       for(const p of parts){
@@ -1112,72 +1125,87 @@ Delete
       return "";
     }
     const csrftoken = getCookie("csrftoken");
-  
-    function openModal(){
-      modal.style.display = "flex";
-      inNewPw.focus();
-    }
+
+    if(copyBtn) copyBtn.addEventListener("click", () => {
+      const val = inCurrent.value;
+      if(val && val !== "(not set)" && val !== "Loading..."){
+        navigator.clipboard.writeText(val).catch(()=>{});
+      }
+    });
+
     function closeModal(){
       modal.style.display = "none";
       currentUserId = null;
       sub.textContent = "";
       msg.textContent = "";
       inPhone.value = "";
+      inCurrent.value = "";
       inNewPw.value = "";
     }
-  
+
     if(closeBtn) closeBtn.addEventListener("click", closeModal);
     modal.addEventListener("click", (e) => { if(e.target === modal) closeModal(); });
     document.addEventListener("keydown", (e) => {
       if(e.key === "Escape" && modal.style.display === "flex") closeModal();
     });
-  
+
     async function savePassword(){
       if(!currentUserId) return;
-  
+
       const pw = (inNewPw.value || "").trim();
       if(pw.length < 6){
         msg.textContent = "Password min 6 characters ❌";
         return;
       }
-  
+
       msg.textContent = "Saving...";
-  
+
       const url = `/staff/users/${currentUserId}/set-password/`;
       const fd = new FormData();
       fd.append("new_password", pw);
-  
+
       const r = await fetch(url, {
         method: "POST",
         headers: { "X-CSRFToken": csrftoken },
         body: fd
       });
-  
+
       const data = await r.json().catch(() => ({}));
-  
+
       if(data.ok){
+        inCurrent.value = pw;
         msg.textContent = "Saved ✅";
-        setTimeout(closeModal, 450);
+        setTimeout(closeModal, 600);
       }else{
         msg.textContent = "Save failed ❌";
       }
     }
-  
+
     if(saveBtn) saveBtn.addEventListener("click", savePassword);
-  
+
     // click handler for Password buttons
-    document.addEventListener("click", (e) => {
+    document.addEventListener("click", async (e) => {
       const btn = e.target.closest(".js-pass-btn");
       if(!btn) return;
-  
+
       currentUserId = btn.getAttribute("data-user-id");
       const phone = btn.getAttribute("data-phone") || "";
-  
+
       inPhone.value = phone;
+      inCurrent.value = "Loading...";
       sub.textContent = phone ? `Phone: ${phone}` : "";
       msg.textContent = "";
       inNewPw.value = "";
-      openModal();
+      modal.style.display = "flex";
+
+      try {
+        const r = await fetch(`/staff/users/${currentUserId}/get-password/`, { cache: "no-store" });
+        const data = await r.json();
+        inCurrent.value = data.plain_password || "(not set)";
+      } catch(e) {
+        inCurrent.value = "(error)";
+      }
+      setTimeout(() => inNewPw.focus(), 50);
     });
   })();
   </script>

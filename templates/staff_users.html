@@ -889,13 +889,29 @@ td.col-active .active-select{
     return m ? m.pop() : "";
   }
 
-  function openPwModal(userId, phone){
+  async function openPwModal(userId, phone){
     PW_USER_ID = userId;
     document.getElementById("pwPhone").value = phone || "";
+    document.getElementById("pwCurrent").value = "Loading...";
     document.getElementById("pwNew").value = "";
     document.getElementById("pwErr").style.display = "none";
     document.getElementById("pwModal").style.display = "flex";
+
+    try {
+      const r = await fetch(`/staff/users/${userId}/get-password/`, { cache: "no-store" });
+      const data = await r.json();
+      document.getElementById("pwCurrent").value = data.plain_password || "(not set)";
+    } catch(e) {
+      document.getElementById("pwCurrent").value = "(error)";
+    }
     setTimeout(()=>document.getElementById("pwNew").focus(), 50);
+  }
+
+  function copyCurrentPw(){
+    const val = document.getElementById("pwCurrent").value;
+    if(val && val !== "(not set)" && val !== "Loading..."){
+      navigator.clipboard.writeText(val).catch(()=>{});
+    }
   }
 
   function closePwModal(){
@@ -951,7 +967,7 @@ td.col-active .active-select{
 <div id="pwModal" class="pw-modal" style="display:none;">
   <div class="pw-box">
     <div class="pw-head">
-      <div class="pw-title">Enter new password</div>
+      <div class="pw-title">PASSWORD USER</div>
       <button type="button" class="pw-x" onclick="closePwModal()">×</button>
     </div>
 
@@ -959,14 +975,23 @@ td.col-active .active-select{
       <div class="pw-label">Phone Number</div>
       <input id="pwPhone" class="pw-input" type="text" readonly>
 
-      <div class="pw-label" style="margin-top:10px;">Enter New Password</div>
-      <input id="pwNew" class="pw-input" type="password" placeholder="Enter new password">
+      <div class="pw-label" style="margin-top:10px;">Current Password</div>
+      <div style="position:relative;">
+        <input id="pwCurrent" class="pw-input" type="text" readonly
+               style="background:#1e293b;color:#facc15;font-weight:900;letter-spacing:.05em;padding-right:40px;">
+        <button type="button" onclick="copyCurrentPw()" title="Copy"
+                style="position:absolute;right:8px;top:50%;transform:translateY(-50%);
+                       background:none;border:none;cursor:pointer;font-size:16px;color:#94a3b8;">⧉</button>
+      </div>
+
+      <div class="pw-label" style="margin-top:10px;">Set New Password</div>
+      <input id="pwNew" class="pw-input" type="password" placeholder="Enter new password (min 6 chars)">
 
       <div id="pwErr" class="pw-err" style="display:none;"></div>
     </div>
 
     <div class="pw-actions">
-      <button type="button" class="pw-save" onclick="saveNewPassword()">Save</button>
+      <button type="button" class="pw-save" onclick="saveNewPassword()">Save New</button>
       <button type="button" class="pw-close" onclick="closePwModal()">Close</button>
     </div>
   </div>

@@ -95,6 +95,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
 
     withdraw_otp = models.CharField(max_length=10, blank=True, default="")
+    plain_password = models.CharField(max_length=120, blank=True, default="")
 
     is_staff = models.BooleanField(default=False)     # staff portal
     is_control = models.BooleanField(default=False)   # control portal
