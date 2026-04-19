@@ -163,7 +163,7 @@ h2{ color: var(--primary) !important; }
 
     <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:14px;">
       <div>
-        <h2 style="margin:0;font-size:22px;font-weight:950;">Payment Method</h2>
+        <h2 style="margin:0;font-size:22px;font-weight:950;">Beneficiary Details</h2>
         <div class="muted" style="margin-top:4px;font-size:13px;">Bank &amp; wallet info</div>
       </div>
       <span class="badge {% if saved %}is-saved{% endif %}">
@@ -201,16 +201,16 @@ h2{ color: var(--primary) !important; }
     <form method="post">
       {% csrf_token %}
 
-      <!-- Bank -->
+      <!-- Beneficiary -->
       <div class="pm-section {% if saved %}pm-locked{% endif %}">
-        <div class="pm-title">Bank</div>
+        <div class="pm-title">Beneficiary</div>
         <div style="display:grid;gap:12px;">
           <div>
-            <div class="muted" style="font-size:12px;font-weight:700;margin-bottom:6px;">Account name</div>
+            <div class="muted" style="font-size:12px;font-weight:700;margin-bottom:6px;">Bank Name</div>
             {{ form.bank_name }}
           </div>
           <div>
-            <div class="muted" style="font-size:12px;font-weight:700;margin-bottom:6px;">Account number</div>
+            <div class="muted" style="font-size:12px;font-weight:700;margin-bottom:6px;">Bank Account No.</div>
             {{ form.bank_account }}
           </div>
         </div>

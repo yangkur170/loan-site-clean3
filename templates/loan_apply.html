@@ -703,7 +703,7 @@ input[readonly], textarea[readonly] { opacity: .80; cursor: not-allowed; }
       {% if locked %}
         {% if loan.status == "DRAFT" %}
           <a href="{% url 'payment_method' %}" class="btn btn-primary cta" style="display:flex;align-items:center;justify-content:center;text-decoration:none;">
-            Continue to Payment Method →
+            Continue to Beneficiary Details →
           </a>
         {% else %}
           <button class="btn btn-primary cta" type="button" disabled style="opacity:.6;">
@@ -712,7 +712,7 @@ input[readonly], textarea[readonly] { opacity: .80; cursor: not-allowed; }
         {% endif %}
       {% else %}
         <button class="btn btn-primary cta" type="submit" name="action" value="apply_loan">
-          Continue to Payment Method →
+          Continue to Beneficiary Details →
         </button>
       {% endif %}
       </div>
