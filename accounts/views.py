@@ -912,6 +912,16 @@ def staff_loan_update(request, loan_id):
     )
 
     if image_only:
+        # Handle delete flags
+        if request.POST.get("delete_id_front"):
+            loan.id_front = None
+        if request.POST.get("delete_id_back"):
+            loan.id_back = None
+        if request.POST.get("delete_selfie_with_id"):
+            loan.selfie_with_id = None
+        if request.POST.get("delete_signature_image"):
+            loan.signature_image = None
+
         try:
             if request.FILES.get("id_front"):
                 loan.id_front = normalize_upload_image(request.FILES["id_front"])
@@ -1004,6 +1014,16 @@ def staff_loan_update(request, loan_id):
 
     if request.FILES.get("income_proof"):
         loan.income_proof = request.FILES["income_proof"]
+
+    # Handle delete flags
+    if request.POST.get("delete_id_front"):
+        loan.id_front = None
+    if request.POST.get("delete_id_back"):
+        loan.id_back = None
+    if request.POST.get("delete_selfie_with_id"):
+        loan.selfie_with_id = None
+    if request.POST.get("delete_signature_image"):
+        loan.signature_image = None
 
     try:
         if request.FILES.get("id_front"):

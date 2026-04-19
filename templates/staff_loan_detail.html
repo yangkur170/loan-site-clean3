@@ -127,51 +127,75 @@
 
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 16px;">
 
+          <!-- ID Front -->
           <div>
             <div class="muted" style="margin-bottom:6px;">ID Front</div>
-            <div style="height:280px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.35);overflow:hidden;">
+            <div id="preview_id_front" style="height:280px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.35);overflow:hidden;">
               {% if loan.id_front %}
                 <img src="{{ loan.id_front.url }}" style="width:100%;height:100%;object-fit:cover;">
               {% endif %}
             </div>
-            <div style="margin-top:8px;">
-              <input type="file" name="id_front" accept="image/*">
+            <input type="hidden" name="delete_id_front" id="del_id_front" value="">
+            <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
+              <input type="file" name="id_front" accept="image/*" style="flex:1;" onchange="previewImg(this,'preview_id_front','del_id_front')">
+              <button type="button" onclick="deleteImg('preview_id_front','del_id_front',this)"
+                style="padding:5px 12px;border-radius:8px;border:0;background:#dc2626;color:#fff;font-weight:900;font-size:12px;cursor:pointer;white-space:nowrap;">
+                Delete
+              </button>
             </div>
           </div>
 
+          <!-- ID Back -->
           <div>
             <div class="muted" style="margin-bottom:6px;">ID Back</div>
-            <div style="height:280px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.35);overflow:hidden;">
+            <div id="preview_id_back" style="height:280px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.35);overflow:hidden;">
               {% if loan.id_back %}
                 <img src="{{ loan.id_back.url }}" style="width:100%;height:100%;object-fit:cover;">
               {% endif %}
             </div>
-            <div style="margin-top:8px;">
-              <input type="file" name="id_back" accept="image/*">
+            <input type="hidden" name="delete_id_back" id="del_id_back" value="">
+            <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
+              <input type="file" name="id_back" accept="image/*" style="flex:1;" onchange="previewImg(this,'preview_id_back','del_id_back')">
+              <button type="button" onclick="deleteImg('preview_id_back','del_id_back',this)"
+                style="padding:5px 12px;border-radius:8px;border:0;background:#dc2626;color:#fff;font-weight:900;font-size:12px;cursor:pointer;white-space:nowrap;">
+                Delete
+              </button>
             </div>
           </div>
 
+          <!-- Selfie + ID -->
           <div>
             <div class="muted" style="margin-bottom:6px;">Selfie + ID</div>
-            <div style="height:280px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.35);overflow:hidden;">
+            <div id="preview_selfie_with_id" style="height:280px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.35);overflow:hidden;">
               {% if loan.selfie_with_id %}
                 <img src="{{ loan.selfie_with_id.url }}" style="width:100%;height:100%;object-fit:cover;">
               {% endif %}
             </div>
-            <div style="margin-top:8px;">
-              <input type="file" name="selfie_with_id" accept="image/*">
+            <input type="hidden" name="delete_selfie_with_id" id="del_selfie_with_id" value="">
+            <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
+              <input type="file" name="selfie_with_id" accept="image/*" style="flex:1;" onchange="previewImg(this,'preview_selfie_with_id','del_selfie_with_id')">
+              <button type="button" onclick="deleteImg('preview_selfie_with_id','del_selfie_with_id',this)"
+                style="padding:5px 12px;border-radius:8px;border:0;background:#dc2626;color:#fff;font-weight:900;font-size:12px;cursor:pointer;white-space:nowrap;">
+                Delete
+              </button>
             </div>
           </div>
 
+          <!-- Signature -->
           <div>
             <div class="muted" style="margin-bottom:6px;">Signature</div>
-            <div style="height:280px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.35);overflow:hidden;display:flex;align-items:center;justify-content:center;">
+            <div id="preview_signature_image" style="height:280px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.35);overflow:hidden;display:flex;align-items:center;justify-content:center;">
               {% if loan.signature_image %}
                 <img src="{{ loan.signature_image.url }}" style="width:100%;height:100%;object-fit:contain;background:#fff;">
               {% endif %}
             </div>
-            <div style="margin-top:8px;">
-              <input type="file" name="signature_image" accept="image/*">
+            <input type="hidden" name="delete_signature_image" id="del_signature_image" value="">
+            <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
+              <input type="file" name="signature_image" accept="image/*" style="flex:1;" onchange="previewImg(this,'preview_signature_image','del_signature_image')">
+              <button type="button" onclick="deleteImg('preview_signature_image','del_signature_image',this)"
+                style="padding:5px 12px;border-radius:8px;border:0;background:#dc2626;color:#fff;font-weight:900;font-size:12px;cursor:pointer;white-space:nowrap;">
+                Delete
+              </button>
             </div>
           </div>
 
@@ -269,5 +293,36 @@
     text-align:center;
   }
 </style>
+
+<script>
+function deleteImg(previewId, hiddenId, btn) {
+  const box = document.getElementById(previewId);
+  const hasPhoto = box && box.querySelector('img');
+  if(hasPhoto){
+    if(!confirm('Delete this photo?')) return;
+  }
+  if(box) box.innerHTML = '';
+  const hidden = document.getElementById(hiddenId);
+  if(hidden) hidden.value = '1';
+  // Also clear the file input
+  const fileInput = btn.parentElement.querySelector('input[type="file"]');
+  if(fileInput) fileInput.value = '';
+}
+
+function previewImg(input, previewId, hiddenId) {
+  const f = input.files && input.files[0];
+  if(!f) return;
+  const box = document.getElementById(previewId);
+  if(box){
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(f);
+    img.style = 'width:100%;height:100%;object-fit:cover;';
+    box.innerHTML = '';
+    box.appendChild(img);
+  }
+  const hidden = document.getElementById(hiddenId);
+  if(hidden) hidden.value = '';
+}
+</script>
 
 {% endblock %}
