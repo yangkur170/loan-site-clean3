@@ -599,7 +599,7 @@ input[readonly] {
 
     const rate = 0.0035; // 0.35% per month
     if(amount > 0 && term > 0){
-      const monthly = amount * rate * Math.pow(1 + rate, term) / (Math.pow(1 + rate, term) - 1);
+      const monthly = (amount / term) + (amount * rate);
       const total = monthly * term;
       if (outMonthly) outMonthly.textContent = "₱" + fmt(monthly);
       if (outTotal) outTotal.textContent = "₱" + fmt(total);

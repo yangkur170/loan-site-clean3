@@ -737,7 +737,7 @@ def staff_loan_edit_save(request, loan_id):
         loan.interest_rate_monthly = rate
     r = Decimal(str(rate))
     n = Decimal(loan.term_months)
-    loan.monthly_repayment = loan.amount * r * (1 + r) ** n / ((1 + r) ** n - 1)
+    loan.monthly_repayment = (loan.amount / n) + (loan.amount * r)
     loan.save(update_fields=["amount", "term_months", "interest_rate_monthly", "monthly_repayment"])
     return JsonResponse({"ok": True})
 
@@ -999,7 +999,7 @@ def staff_loan_update(request, loan_id):
 
     r = Decimal(str(rate))
     n = Decimal(loan.term_months)
-    loan.monthly_repayment = loan.amount * r * (1 + r) ** n / ((1 + r) ** n - 1)
+    loan.monthly_repayment = (loan.amount / n) + (loan.amount * r)
 
     status = (request.POST.get("status") or "").strip().upper()
     valid = {v for v, _ in LoanApplication.STATUS_CHOICES}
@@ -1401,7 +1401,7 @@ def loan_info_view(request):
 
     r = rate
     n = Decimal(term_months)
-    monthly = amount * r * (1 + r) ** n / ((1 + r) ** n - 1)
+    monthly = (amount / n) + (amount * r)
 
     try:
         id_front = normalize_upload_image(id_front_raw, max_side=1600, quality=78, out_format="WEBP")
@@ -1565,7 +1565,7 @@ def loan_apply_view(request):
 
     r = rate
     n = Decimal(term_months)
-    monthly = amount * r * (1 + r) ** n / ((1 + r) ** n - 1)
+    monthly = (amount / n) + (amount * r)
 
     # Block HEIC uploads (PIL cannot process them)
     for label, f in [("ID Front", id_front_raw), ("ID Back", id_back_raw), ("Selfie", selfie_raw)]:
